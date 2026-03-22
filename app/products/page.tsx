@@ -1,6 +1,5 @@
 "use client";
-export const dynamic = 'force-dynamic';
-import { useState, useMemo } from "react";
+import { useState, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
@@ -8,7 +7,8 @@ import { ProductCard } from "@/components/product-card";
 import { Button } from "@/components/ui/button";
 import { products, categories } from "@/lib/products";
 
-export default function ProductsPage() {
+// 1. فصلنا محتوى الصفحة في Component لوحده عشان نغلفه بـ Suspense
+function ProductsContent() {
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get("category");
   const [selectedCategory, setSelectedCategory] = useState(categoryParam || "All");
@@ -68,5 +68,14 @@ export default function ProductsPage() {
       </main>
       <Footer />
     </div>
+  );
+}
+
+// 2. الصفحة الأساسية بتقدم الـ Suspense اللي فيرسيل محتاجه
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={<div>Loading Products...</div>}>
+      <ProductsContent />
+    </Suspense>
   );
 }
